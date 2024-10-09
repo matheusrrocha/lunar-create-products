@@ -124,22 +124,12 @@ $product = Product::create([
 
 ## 4. Add the variants to the product
 
-There's probably a better way to create this records but i didnt had the time to look and this works, so...
-
 ```php
-//Add color
-DB::table('lunar_product_product_option')->insert([
-    'product_id' => $product->id,
-    'product_option_id' => $colorVariant->id,
-    'position' => 1
-]);
-
-//Add size
-DB::table('lunar_product_product_option')->insert([
-    'product_id' => $product->id,
-    'product_option_id' => $sizeVariant->id,
-    'position' => 2
-]);
+collect([$colorVariant, $sizeVariant])->each(function ($productOption, $index) use ($product) {
+    $product->productOptions()->syncWithoutDetaching([
+        $productOption->id => ['position' => $index]
+    ]);
+});
 ```
 
 ## 5. Add the combinations of colors X sizes
